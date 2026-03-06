@@ -34,6 +34,15 @@
       margin: 54px auto;
     }
 
+    .top {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
     .card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -77,13 +86,6 @@
       text-decoration: underline;
     }
 
-    .actions {
-      margin-top: 20px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
     .btn {
       display: inline-block;
       border-radius: 999px;
@@ -103,6 +105,10 @@
 </head>
 <body>
   <main class="wrap">
+    <div class="top">
+      <a class="btn primary" href="./index.html">Back to Home</a>
+    </div>
+
     <section class="card">
       <h1>Support</h1>
       <p>If you need help with Site Script Launcher, please contact the developer using the details below.</p>
@@ -111,11 +117,6 @@
       <div class="meta">
         <div class="row"><strong>Developer:</strong> Russel Sese</div>
         <div class="row"><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/russelsese/" target="_blank" rel="noopener noreferrer">https://www.linkedin.com/in/russelsese/</a></div>
-      </div>
-
-      <div class="actions">
-        <a class="btn primary" href="./index.html">Back to Home</a>
-        <a class="btn" href="../README.md">Documentation</a>
       </div>
     </section>
   </main>

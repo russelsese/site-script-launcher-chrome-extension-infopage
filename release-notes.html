@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Release Notes | Site Script Launcher</title>
+  <meta name="description" content="Release notes for Site Script Launcher." />
+  <style>
+    :root {
+      --bg: #f4f8ff;
+      --card: #ffffff;
+      --ink: #142238;
+      --muted: #4f627d;
+      --line: #d6e0ec;
+      --brand: #0452c8;
+      --radius: 18px;
+      --shadow: 0 18px 40px rgba(10, 31, 66, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(860px 300px at -120px -60px, #cae7ff 0%, transparent 65%),
+        radial-gradient(620px 300px at 110% 0%, #ffe0c7 0%, transparent 64%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Space Grotesk", "Avenir Next", "Trebuchet MS", sans-serif;
+      line-height: 1.5;
+    }
+
+    .wrap {
+      width: min(940px, 92vw);
+      margin: 40px auto 56px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      background: #e8f2ff;
+      border: 1px solid #bfd9ff;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(30px, 4vw, 48px);
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+
+    h2 {
+      margin: 22px 0 8px;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      margin: 16px 0 8px;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+    }
+
+    p, li {
+      color: var(--muted);
+      margin: 0;
+      font-size: 15px;
+    }
+
+    ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 8px;
+    }
+
+    code {
+      font-family: "Consolas", "Courier New", monospace;
+      background: #edf4ff;
+      border: 1px solid #d8e8ff;
+      padding: 1px 4px;
+      border-radius: 6px;
+      color: #143867;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="top">
+      <a class="btn" href="./index.html">Back to Home</a>
+    </div>
+
+    <section class="card">
+      <span class="badge">Release Notes</span>
+      <h1>Version 1.0.0</h1>
+
+      <h2>Added</h2>
+      <ul>
+        <li>Per-script URL pattern matching with wildcard (<code>*</code>) support.</li>
+        <li>Script management improvements: add, enable/disable, remove scripts; edit existing scripts; and cancel edit mode.</li>
+        <li>Default URL pattern set to <code>*</code> (all sites) for faster setup.</li>
+        <li>Improved script execution diagnostics with better error messages in popup status and partial success/failure reporting for run-now.</li>
+        <li>CSP fallback support for strict sites (for example GitHub) using <code>debugger</code> API.</li>
+        <li>New branding and assets: extension renamed to <strong>Site Script Launcher</strong> with new app icon set (<code>16</code>, <code>32</code>, <code>48</code>, <code>128</code>).</li>
+        <li>Developer credit in popup footer: Russel Sese + LinkedIn link.</li>
+        <li>Documentation added: <code>README.md</code> and <code>publish-chrome-edge-extension.md</code>.</li>
+      </ul>
+
+      <h2>Changed</h2>
+      <ul>
+        <li>Popup UI modernized with rounded controls and cards, icon-enhanced sections, and improved spacing, typography, and visual hierarchy.</li>
+        <li>Manifest updated: added <code>debugger</code> permission, added <code>action.default_icon</code> and top-level <code>icons</code>, and updated extension name/title to <strong>Site Script Launcher</strong>.</li>
+      </ul>
+
+      <h2>Fixed</h2>
+      <ul>
+        <li>URL pattern handling for trailing path wildcard: <code>https://github.com/russelsese/*</code> now matches both <code>https://github.com/russelsese</code> and <code>https://github.com/russelsese/...</code>.</li>
+        <li>Double vertical scrollbar in popup: removed inner <code>.app</code> scroll container so only one scroll behavior remains.</li>
+      </ul>
+
+      <h2>Notes</h2>
+      <ul>
+        <li>Existing script execution behavior remains intact.</li>
+        <li>Existing stored scripts are supported with compatibility fallback for older URL settings.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
