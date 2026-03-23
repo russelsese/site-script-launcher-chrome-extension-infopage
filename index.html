@@ -4,7 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Site Script Launcher | Chrome Extension</title>
-  <meta name="description" content="Run your own JavaScript on matching websites with wildcard URL rules. Built for fast automation, testing, and productivity." />
+  <meta name="description" content="Run your own JavaScript on any website with wildcard URL rules. Save scripts, auto-run on page load, or trigger on demand — all stored locally in your browser." />
+  <meta name="keywords" content="chrome extension, run javascript on websites, custom scripts, url pattern matching, wildcard url, javascript automation, browser scripting, site script" />
+  <meta property="og:title" content="Site Script Launcher — Run Custom Scripts on Any Website" />
+  <meta property="og:description" content="Save JavaScript scripts with wildcard URL rules and run them on demand or automatically after page load. No servers, no sign-in." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="./images/sample-02.png" />
   <style>
     :root {
       --bg: #f4f7fb;
@@ -14,282 +19,542 @@
       --line: #d6e0ec;
       --brand: #0452c8;
       --brand-2: #0b7ad9;
-      --warm: #ff7a35;
       --radius: 18px;
       --shadow: 0 18px 40px rgba(10, 31, 66, 0.12);
+      --shadow-lg: 0 28px 60px rgba(10, 31, 66, 0.18);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      margin: 0;
       background:
-        radial-gradient(860px 300px at -120px -60px, #cae7ff 0%, transparent 65%),
-        radial-gradient(620px 300px at 110% 0%, #ffe0c7 0%, transparent 64%),
+        radial-gradient(900px 320px at -140px -80px, #cae7ff 0%, transparent 60%),
+        radial-gradient(680px 320px at 115% -5%, #ffe0c7 0%, transparent 60%),
         var(--bg);
       color: var(--ink);
       font-family: "Space Grotesk", "Avenir Next", "Trebuchet MS", sans-serif;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
-    .wrap {
+    .wrap { width: min(1100px, 92vw); margin: 0 auto; }
+
+    /* Nav */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(14px);
+      background: rgba(244, 247, 251, 0.82);
+      border-bottom: 1px solid rgba(214, 224, 236, 0.6);
+      padding: 12px 0;
+    }
+    .nav-inner {
       width: min(1100px, 92vw);
       margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
-
-    .hero {
-      padding: 72px 0 40px;
+    .nav-logo {
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--ink);
+      text-decoration: none;
     }
+    .nav-links { display: flex; gap: 8px; }
 
+    .btn {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-weight: 700;
+      font-size: 13px;
+      text-decoration: none;
+      border: 1px solid transparent;
+      font-family: inherit;
+      transition: filter 0.15s, transform 0.12s, box-shadow 0.15s;
+    }
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(145deg, var(--brand-2), var(--brand));
+      box-shadow: 0 8px 22px rgba(4, 82, 200, 0.28);
+    }
+    .btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    .btn-ghost { color: var(--ink); background: #fff; border-color: var(--line); }
+    .btn-ghost:hover { background: #f0f6ff; }
+
+    /* Hero */
+    .hero { padding: 80px 0 52px; }
     .badge {
       display: inline-block;
-      font-size: 12px;
+      font-size: 11.5px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--brand);
       background: #e8f2ff;
       border: 1px solid #bfd9ff;
-      padding: 8px 12px;
+      padding: 7px 13px;
       border-radius: 999px;
       font-weight: 700;
+      margin-bottom: 18px;
     }
-
     h1 {
-      margin: 14px 0 12px;
-      font-size: clamp(34px, 5vw, 62px);
-      line-height: 1.02;
-      letter-spacing: -0.02em;
-      max-width: 13ch;
+      font-size: clamp(38px, 5.5vw, 68px);
+      line-height: 1.01;
+      letter-spacing: -0.025em;
+      max-width: 15ch;
+      margin-bottom: 18px;
     }
-
+    h1 span { color: var(--brand); }
     .lead {
-      margin: 0;
-      max-width: 62ch;
+      max-width: 60ch;
       color: var(--muted);
-      font-size: clamp(16px, 2.2vw, 20px);
+      font-size: clamp(16px, 2.2vw, 19px);
+      margin-bottom: 28px;
     }
-
-    .cta {
-      margin-top: 24px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      display: inline-block;
-      border-radius: 999px;
-      padding: 11px 17px;
-      font-weight: 700;
-      text-decoration: none;
-      border: 1px solid transparent;
-    }
-
-    .btn-primary {
-      color: #fff;
-      background: linear-gradient(145deg, var(--brand-2), var(--brand));
-      box-shadow: 0 10px 24px rgba(4, 82, 200, 0.3);
-    }
-
-    .btn-secondary {
-      color: var(--ink);
-      background: #fff;
-      border-color: var(--line);
-    }
-
-    .grid {
-      display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(12, 1fr);
-      margin: 22px 0 34px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
-
-    .feature {
-      grid-column: span 4;
-    }
-
-    h2 {
-      margin: 0 0 8px;
-      font-size: 22px;
-      letter-spacing: -0.01em;
-    }
-
-    h3 {
-      margin: 0 0 8px;
-      font-size: 17px;
-      letter-spacing: -0.01em;
-    }
-
-    p, li {
-      color: var(--muted);
-      margin: 0;
-    }
-
-    ul, ol {
-      margin: 0;
-      padding-left: 18px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .section {
-      margin: 24px 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    pre {
-      margin: 0;
-      background: #081830;
-      color: #d9ecff;
-      border-radius: 14px;
-      border: 1px solid #24436a;
-      padding: 14px;
-      overflow: auto;
-      font-size: 13px;
-    }
-
+    .cta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
     .chip {
-      display: inline-block;
-      margin: 6px 8px 0 0;
       font-size: 12px;
       font-weight: 700;
       border-radius: 999px;
       background: #fff5ef;
-      color: #9b4214;
+      color: #8b3a10;
       border: 1px solid #ffd4bd;
-      padding: 6px 10px;
+      padding: 5px 11px;
     }
 
+    /* Hero screenshot */
+    .hero-img-wrap {
+      margin-top: 52px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(10, 31, 66, 0.08);
+      line-height: 0;
+    }
+    .hero-img-wrap img { width: 100%; display: block; }
+
+    /* Section headings */
+    .section-label {
+      font-size: 11.5px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(26px, 3.5vw, 40px);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    .section-sub {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 58ch;
+      margin-bottom: 36px;
+    }
+
+    /* Features */
+    .features { padding: 72px 0; }
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .feat-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .feat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #e8f2ff, #d0e6ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .feat-icon svg { color: var(--brand); }
+    .feat-card h3 { font-size: 16px; letter-spacing: -0.01em; }
+    .feat-card p { color: var(--muted); font-size: 14px; line-height: 1.55; }
+
+    /* Showcase rows */
+    .showcase { padding: 16px 0 72px; display: grid; gap: 24px; }
+    .showcase-row {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 320px;
+    }
+    .showcase-row.flip { direction: rtl; }
+    .showcase-row.flip > * { direction: ltr; }
+    .showcase-text {
+      padding: 40px 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+    }
+    .showcase-text h2 { font-size: clamp(20px, 2.4vw, 28px); letter-spacing: -0.015em; }
+    .showcase-text p { color: var(--muted); font-size: 15px; line-height: 1.6; }
+    .showcase-text ul {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+    .showcase-text ul li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .showcase-text ul li::before {
+      content: "✓";
+      color: var(--brand);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .showcase-img {
+      overflow: hidden;
+      background: #e8f2ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .showcase-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: left top;
+      display: block;
+    }
+    .showcase-img.portrait img { object-position: center top; }
+
+    /* How it works */
+    .how {
+      padding: 72px 0;
+      background: rgba(255, 255, 255, 0.55);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .step { display: flex; flex-direction: column; gap: 10px; }
+    .step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, var(--brand-2), var(--brand));
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 6px 16px rgba(4, 82, 200, 0.3);
+    }
+    .step h3 { font-size: 15px; }
+    .step p { color: var(--muted); font-size: 13.5px; line-height: 1.55; }
+
+    /* Privacy */
+    .privacy { padding: 64px 0; }
+    .privacy-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 36px;
+    }
+    .privacy-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .privacy-no {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--brand);
+    }
+    .privacy-card p { color: var(--muted); font-size: 13.5px; }
+
+    /* Footer */
     footer {
-      margin: 34px 0 60px;
-      padding: 18px;
+      padding: 20px 0 52px;
       border-top: 1px solid #dbe4ee;
+    }
+    .footer-inner {
+      width: min(1100px, 92vw);
+      margin: 0 auto;
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 10px;
       color: var(--muted);
       font-size: 14px;
+      padding-top: 20px;
+    }
+    .footer-inner a { color: var(--brand); text-decoration: none; font-weight: 600; }
+    .footer-inner a:hover { text-decoration: underline; }
+
+    code {
+      font-size: 0.88em;
+      background: #eef4ff;
+      color: #0452c8;
+      border-radius: 4px;
+      padding: 1px 5px;
     }
 
-    a {
-      color: var(--brand);
-    }
-
+    /* Responsive */
     @media (max-width: 900px) {
-      .feature {
-        grid-column: span 6;
-      }
-      .section {
-        grid-template-columns: 1fr;
-      }
+      .feat-grid { grid-template-columns: 1fr 1fr; }
+      .showcase-row { grid-template-columns: 1fr; }
+      .showcase-row.flip { direction: ltr; }
+      .showcase-img { min-height: 220px; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .privacy-grid { grid-template-columns: 1fr 1fr; }
     }
-
     @media (max-width: 620px) {
-      .hero {
-        padding-top: 42px;
-      }
-      .feature {
-        grid-column: span 12;
-      }
-      footer {
-        margin-bottom: 30px;
-      }
+      .hero { padding-top: 44px; }
+      .feat-grid { grid-template-columns: 1fr; }
+      .showcase-text { padding: 28px 22px; }
+      .steps { grid-template-columns: 1fr; }
+      .privacy-grid { grid-template-columns: 1fr 1fr; }
+      .nav-links .btn-ghost { display: none; }
     }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="hero">
-      <span class="badge">Chrome Extension</span>
-      <h1>Site Script Launcher</h1>
-      <p class="lead">Run your own JavaScript on pages that match your URL rules. Save scripts, use wildcards, execute on demand, or auto-run after page load.</p>
-      <div class="cta">
-        <a class="btn btn-primary" href="#">Add to Chrome</a>
-        <a class="btn btn-secondary" href="./support.html">Support</a>
-        <a class="btn btn-secondary" href="./privacypolicy.html">Privacy Policy</a>
+
+  <!-- Nav -->
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="#">Site Script Launcher</a>
+      <div class="nav-links">
+        <a class="btn btn-ghost" href="./support.html">Support</a>
+        <a class="btn btn-ghost" href="./privacypolicy.html">Privacy</a>
+        <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/site-script-launcher/emcledpifahmjjfkliniibnmbcnlmhjd" target="_blank" rel="noopener noreferrer">Add to Chrome</a>
       </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero wrap">
+    <span class="badge">Chrome Extension</span>
+    <h1>Run <span>your scripts</span> on any website.</h1>
+    <p class="lead">Save JavaScript snippets with wildcard URL rules and run them on demand or automatically after page load — no server, no sign-in, just your code.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/site-script-launcher/emcledpifahmjjfkliniibnmbcnlmhjd" target="_blank" rel="noopener noreferrer">Add to Chrome — it's free</a>
+      <a class="btn btn-ghost" href="./release-notes.html">Release Notes</a>
+    </div>
+    <div class="chips">
       <span class="chip">Wildcard URL Matching</span>
-      <span class="chip">Run Now + Auto-Run</span>
+      <span class="chip">Auto-Run on Load</span>
+      <span class="chip">Run on Demand</span>
       <span class="chip">Edit Saved Scripts</span>
-    </section>
+      <span class="chip">Works on Strict Sites</span>
+      <span class="chip">No Sign-in</span>
+    </div>
+    <div class="hero-img-wrap">
+      <img src="./images/sample-02.png" alt="Site Script Launcher extension popup showing a script running on google.com with an alert dialog" loading="eager" />
+    </div>
+  </section>
 
-    <section class="grid">
-      <article class="card feature">
+  <!-- Features -->
+  <section class="features wrap">
+    <p class="section-label">Features</p>
+    <h2 class="section-title">Everything you need to automate any page.</h2>
+    <p class="section-sub">Write it once, run it anywhere your URL pattern matches — with full control over when scripts fire.</p>
+    <div class="feat-grid">
+      <article class="feat-card">
+        <div class="feat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
         <h3>Per-site Script Rules</h3>
-        <p>Each script has its own URL pattern. Match exactly what you need, from one path to every site.</p>
+        <p>Each script gets its own URL pattern. Match a single path, an entire domain, or every site — as precise or as broad as you need.</p>
       </article>
-      <article class="card feature">
+      <article class="feat-card">
+        <div class="feat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <h3>Wildcard URL Matching</h3>
+        <p>Use <code>*</code> to match anything: <code>https://github.com/*</code>, <code>*://*.example.com/*</code>, or just <code>*</code> for every page.</p>
+      </article>
+      <article class="feat-card">
+        <div class="feat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </div>
+        <h3>Run on Demand</h3>
+        <p>Open the popup and click <strong>Run Enabled Scripts On Current Tab</strong> to instantly execute all matching scripts on the page you're viewing.</p>
+      </article>
+      <article class="feat-card">
+        <div class="feat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <h3>Auto-Run on Page Load</h3>
+        <p>Enable auto-run and scripts fire automatically after each matching page loads — no clicks needed once configured.</p>
+      </article>
+      <article class="feat-card">
+        <div class="feat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
         <h3>Works on Strict Sites</h3>
-        <p>Includes fallback execution logic for sites with strict CSP restrictions where normal eval flow is blocked.</p>
+        <p>Includes fallback execution logic for sites with strict Content Security Policies where standard script injection is blocked.</p>
       </article>
-      <article class="card feature">
-        <h3>Built for Speed</h3>
-        <p>Open popup, save script, run instantly on current tab. Keep all scripts and settings locally in your browser.</p>
+      <article class="feat-card">
+        <div class="feat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </div>
+        <h3>Stored Locally</h3>
+        <p>All scripts are saved in <code>chrome.storage.local</code> — they stay in your browser, never sent to any server.</p>
       </article>
-    </section>
+    </div>
+  </section>
 
-    <section class="section">
-      <article class="card">
-        <h2>Quick Start</h2>
-        <ol>
-          <li>Open the extension popup.</li>
-          <li>Add script name, URL pattern, and JavaScript code.</li>
-          <li>Click <strong>Add Script</strong>.</li>
-          <li>Click <strong>Run Enabled Scripts On Current Tab</strong> or enable auto-run.</li>
-        </ol>
-      </article>
-      <article class="card">
-        <h2>Wildcard Patterns</h2>
-        <pre>*
-https://github.com/*
-https://github.com/russelsese/*
-https://*.example.com/*
-*://localhost:*/*</pre>
-      </article>
-    </section>
+  <!-- Showcase rows -->
+  <section class="showcase wrap">
+    <p class="section-label">See it in action</p>
+    <h2 class="section-title">Simple popup, powerful control.</h2>
+    <p class="section-sub">Everything you need is one click away — add scripts, manage rules, and run code without leaving the page.</p>
 
-    <section class="section">
-      <article class="card">
-        <h2>What It Stores</h2>
+    <!-- Row 1: adding a script -->
+    <div class="showcase-row">
+      <div class="showcase-text">
+        <h2>Add and manage scripts in seconds.</h2>
+        <p>Give your script a name, enter a URL pattern, paste your JavaScript, and hit <strong>Add Script</strong>. It's saved instantly and ready to run.</p>
         <ul>
-          <li>Script name, code, URL pattern, enabled state</li>
-          <li>Auto-run preference</li>
-          <li>All settings in <code>chrome.storage.local</code></li>
+          <li>Script name, URL pattern, and JavaScript code in one form</li>
+          <li>Edit or delete any saved script from the popup</li>
+          <li>Enable or disable individual scripts without deleting them</li>
         </ul>
-      </article>
-      <article class="card">
-        <h2>Publishing + Docs</h2>
-        <ul>
-          <li><a href="./release-notes.html">Release Notes</a></li>
-        </ul>
-      </article>
-    </section>
-
-    <footer>
-      <div>Built by Russel Sese</div>
-      <div>
-        <a href="./support.html">Support</a>
-        ·
-        <a href="./privacypolicy.html">Privacy Policy</a>
-        ·
-        <a href="https://github.com/russelsese/site-script-launcher-chrome-extension-infopage">GitHub</a>
-        ·
-        <a href="https://www.linkedin.com/in/russelsese/">LinkedIn</a>
       </div>
-    </footer>
-  </main>
+      <div class="showcase-img portrait">
+        <img src="./images/sample-01.png" alt="Site Script Launcher popup showing the Add Script form with name, URL pattern, and JavaScript fields" loading="lazy" />
+      </div>
+    </div>
+
+    <!-- Row 2: running a script -->
+    <div class="showcase-row flip">
+      <div class="showcase-text">
+        <h2>Run scripts on any page, instantly.</h2>
+        <p>Navigate to a matching page, open the popup, and click run — your script executes immediately in the context of the current tab.</p>
+        <ul>
+          <li>Scripts run in the active tab's page context</li>
+          <li>Auto-run fires scripts automatically after page load</li>
+          <li>Fallback logic handles Content Security Policy restrictions</li>
+        </ul>
+      </div>
+      <div class="showcase-img">
+        <img src="./images/sample-02.png" alt="Site Script Launcher running a script on google.com showing an alert dialog with 'Google was loaded'" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how">
+    <div class="wrap">
+      <p class="section-label">How it works</p>
+      <h2 class="section-title">Four steps to scripting any site.</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Install the extension</h3>
+          <p>Add Site Script Launcher to Chrome from the Web Store — free, no account needed.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Add a script</h3>
+          <p>Open the popup, enter a name, set a URL pattern like <code>https://github.com/*</code>, and paste your JavaScript.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Visit a matching page</h3>
+          <p>Navigate to any URL that matches your pattern. The extension detects the match automatically.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h3>Run or auto-fire</h3>
+          <p>Click <strong>Run Enabled Scripts</strong> from the popup, or enable auto-run to have scripts fire on every matching page load.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy -->
+  <section class="privacy wrap">
+    <p class="section-label">Privacy</p>
+    <h2 class="section-title">Zero data collection. Full stop.</h2>
+    <p class="section-sub">Site Script Launcher runs entirely in your browser. Your scripts and settings never leave your machine.</p>
+    <div class="privacy-grid">
+      <div class="privacy-card">
+        <div class="privacy-no">No ads</div>
+        <p>The extension is free and contains no advertising of any kind.</p>
+      </div>
+      <div class="privacy-card">
+        <div class="privacy-no">No tracking</div>
+        <p>No analytics, no telemetry, no usage data sent anywhere.</p>
+      </div>
+      <div class="privacy-card">
+        <div class="privacy-no">No servers</div>
+        <p>Your scripts stay in <code>chrome.storage.local</code> and go nowhere else.</p>
+      </div>
+      <div class="privacy-card">
+        <div class="privacy-no">No sign-in</div>
+        <p>Install and use immediately. No account, no email, no setup required.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div>Built by Russel Sese</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <a href="./support.html">Support</a>
+        <a href="./privacypolicy.html">Privacy Policy</a>
+        <a href="./release-notes.html">Release Notes</a>
+        <a href="https://github.com/russelsese/site-script-launcher-chrome-extension-infopage" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://www.linkedin.com/in/russelsese/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>
